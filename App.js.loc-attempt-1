@@ -1,0 +1,64 @@
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+import { LocationClient, ListKeysCommand } from "@aws-sdk/client-location";
+
+// a client can be shared by different commands.
+const client = new LocationClient({ region: "REGION" });
+
+const params = {
+  /** input parameters */
+};
+const command = new ListKeysCommand(params);
+
+async function myFunc() {
+  console.log( 'myFunc');
+  console.log( client );
+  console.log( command );
+
+  // async/await.
+  try {
+    const data = await client.send(command);
+    console.log( 'data' );
+    console.log (data);
+   // process data.
+  } catch (error) {
+    // error handling.
+     console.log( 'error' );
+     console.log (error);
+
+//    const { requestId, cfId, extendedRequestId } = error.$metadata;
+//    console.log({ requestId, cfId, extendedRequestId });
+    /**
+     * The keys within exceptions are also parsed.
+     * You can access them by specifying exception names:
+     * if (error.name === 'SomeServiceException') {
+     *     const value = error.specialKeyInException;
+     * }
+     */  
+  } finally {
+    // finally.
+  }
+}
+
+
+export default function App() {
+  (async () => {
+    await myFunc();
+  })();
+
+  return (
+    <View style={styles.container}>
+      <Text>Open up App.js to start working on your app!</Text>
+      <StatusBar style="auto" />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
