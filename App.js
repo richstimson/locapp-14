@@ -107,11 +107,22 @@ async function getPosition() {
 }
 
 // ---
+async function pollTrackerForUpdates() {
+    console.log('pollTrackerForUpdates()');
+
+    await getPosition();
+    await new Promise(resolve => setTimeout(resolve, 10000));
+    await pollTrackerForUpdates();
+}
+  
+
+// ---
 
 export default function App() {
     console.log( 'App()');
     (async () => {
       client = await createClient();
+      await pollTrackerForUpdates();
     })();
 
     
