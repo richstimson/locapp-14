@@ -16,6 +16,10 @@ import 'react-native-url-polyfill/auto';
 import { ReadableStream } from 'web-streams-polyfill/ponyfill';
 
 import amplifyconfig from './src/aws-exports.js';
+import Main from './main.js';
+
+// ---
+
 Amplify.configure(amplifyconfig);
 
 globalThis.ReadableStream = ReadableStream;
@@ -88,6 +92,8 @@ async function updatePosition() {
     }
 }
 
+module.exports.updatePosition = updatePosition;
+
 async function getPosition() {
     console.log('getPosCommand()');
 //    console.log( client );
@@ -122,10 +128,15 @@ export default function App() {
     console.log( 'App()');
     (async () => {
       client = await createClient();
-      await pollTrackerForUpdates();
+//      await pollTrackerForUpdates();
     })();
 
-    
+    return (
+        <View style={styles.container}>
+            <Main />
+        </View>
+    );
+    /*
     return (
       <View style={styles.container}>
         <Button
@@ -140,6 +151,7 @@ export default function App() {
         <StatusBar style="auto" />
       </View>
     );
+    */
   }
   
   const styles = StyleSheet.create({
