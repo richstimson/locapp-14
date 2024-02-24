@@ -10,6 +10,11 @@
       "StackName": "amplify-locapp11-dev-222959",
       "StackId": "arn:aws:cloudformation:us-east-1:604074529252:stack/amplify-locapp11-dev-222959/14743cf0-d29b-11ee-8cbd-1256fed8dfed",
       "AmplifyAppId": "dthltmlnp9ef3"
+    },
+    "categories": {
+      "auth": {
+        "locapp11f223b884": {}
+      }
     }
   }
 }
