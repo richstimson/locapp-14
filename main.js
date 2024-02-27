@@ -13,7 +13,11 @@ export default function Main() {
     const [deviceName, setDeviceName] = useState("");
     const [deviceId, setDeviceId] = useState("");
 
+    console.log( 'Main()');
+
+
     useEffect(() => {
+        console.log( 'Main() useEffect()');
         
         (async () => {
 
@@ -41,10 +45,10 @@ export default function Main() {
               //Get loc
               let loc = await Location.getCurrentPositionAsync({accuracy: Location.Accuracy.Highest});
               if(loc.coords !== null){
-                console.log(`loc: ${JSON.stringify(loc)}`);
+                console.log(`location: ${loc.coords.longitude}, ${loc.coords.latitude}`);
                 setLocation(loc);
 //                deviceSvc.setLocation(loc.coords.latitude, loc.coords.longitude);
-                updatePosition();
+                updatePosition(loc.coords.latitude, loc.coords.longitude);
               }
 
               //Watch loc
@@ -52,10 +56,10 @@ export default function Main() {
                   enableHighAccuracy: true,
                   distanceInterval: 1,
                   timeInterval: 30000}, newLoc => {
-                    console.log(`new loc: ${JSON.stringify(newLoc)}`);
+                    console.log(`NEW location: ${newLoc.coords.longitude}, ${newLoc.coords.latitude}`);
                     setLocation(newLoc);
 //                    deviceSvc.setLocation(newLoc.coords.latitude, newLoc.coords.longitude);
-                    updatePosition();
+                    updatePosition(newLoc.coords.latitude, newLoc.coords.longitude);
                   });
             }
           }
@@ -71,6 +75,11 @@ export default function Main() {
         text = "";//JSON.stringify(location);
    }
 
+  
+    return (
+        <View />
+    );
+  /*
     return (
         <View>
             <Text>Device Name: {deviceName}</Text>
@@ -81,4 +90,5 @@ export default function Main() {
             <Text>{text}</Text>
       </View>
     );
+    */
 }
