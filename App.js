@@ -1,6 +1,6 @@
 // React & Expo Imports
 import { StatusBar } from 'expo-status-bar';
-import { StyleSheet, Text, View, Button, Alert } from 'react-native';
+import { StyleSheet, Text, View, Button, Alert, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
 
@@ -133,7 +133,10 @@ export default function App() {
         title={myMarker.title}
         description={myMarker.description}
       >
-        
+        <Image 
+          uri={require('./assets/ice-cream-truck.png')}
+          style={styles.markerImage}
+        />
       </Marker>
     );
   }
@@ -198,5 +201,9 @@ const styles = StyleSheet.create({
   map: {
       width: '100%',
       height: '100%',
-    },
+  },
+  markerImage: {
+    width: 35,
+    height: 35
+  }
 });
