@@ -132,14 +132,18 @@ export default function App() {
         coordinate={myLocation}
         title={myMarker.title}
         description={myMarker.description}
+        image={require('./assets/ice-cream-truck3.png')}
       >
-        <Image 
-          uri={require('./assets/ice-cream-truck.png')}
-          style={styles.markerImage}
-        />
+
       </Marker>
     );
   }
+  /* 
+          <Image 
+          uri={require('./assets/ice-cream-truck3.png')}
+          style={styles.markerImage}
+        />
+  */
 
   async function pollTrackerForUpdates() {
     console.log('pollTrackerForUpdates()');
