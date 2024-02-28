@@ -12,7 +12,8 @@ import {
   LocationClient,
   AssociateTrackerConsumerCommand,
   BatchUpdateDevicePositionCommand,
-  GetDevicePositionCommand
+  GetDevicePositionCommand,
+  PutGeofenceCommand
 } from '@aws-sdk/client-location';
 
 // Fix ReadableStream error
@@ -117,7 +118,50 @@ const getPosParams = {
 const getPosCommand = new GetDevicePositionCommand(getPosParams);
 // ---
 
+// GeoFence API -------------------------------------
+const createGeofenceInput = { // PutGeofenceRequest
+  CollectionName: "rs-geofence-collection", // required
+  GeofenceId: "rs-geofence-1", // required
+  Geometry: { // GeofenceGeometry
+    Circle: { // Circle
+      Center: [ // required
+        -1.4301285333944764,
+        52.94063620274229,
+      ],
+      Radius: 200, // required
+    },
+  },
+};
+/*  
+  GeofenceProperties: { // PropertyMap
+    "<keys>": "STRING_VALUE",
+  },
+*/
 
+const putGeoFenceCommand = new PutGeofenceCommand(createGeofenceInput);
+
+async function createGeoFence() {
+  console.log( 'createGeoFence' );    
+
+  if(client) {  
+    try {
+      const putGeoFenceResponse = await client.send(putGeoFenceCommand);
+      console.log( putGeoFenceResponse );
+      // { // PutGeofenceResponse
+      //   GeofenceId: "STRING_VALUE", // required
+      //   CreateTime: new Date("TIMESTAMP"), // required
+      //   UpdateTime: new Date("TIMESTAMP"), // required
+      // };
+      } catch (error) {
+          console.log( 'geofence error' );
+          console.log( error );
+    }
+  }
+  else {
+    console.log('no client ');
+  }
+
+}
 
 
 // --- App () ---
@@ -159,20 +203,14 @@ export default function App() {
       </Marker>
     );
   }
-  /* 
-          <Image 
-          uri={require('./assets/ice-cream-truck3.png')}
-          style={styles.markerImage}
-        />
-  */
-
+ 
+  // Note: RECURSIVE FUNCTION - never returns
   async function pollTrackerForUpdates() {
-//    console.log('pollTrackerForUpdates()');
+    console.log('pollTrackerForUpdates()');
 
     await getPosition();
     await new Promise(resolve => setTimeout(resolve, 10000));
     await pollTrackerForUpdates();
-
   }
     
   async function getPosition() {
@@ -195,11 +233,18 @@ export default function App() {
     }
   }
 
+
+
+    
+
   useEffect(() => {
-//    console.log( 'useEffect()');
+    console.log( 'useEffect()');
     (async () => {
       client = await createClient();
-      await pollTrackerForUpdates();
+      console.log( 'createGeoFence2' );  
+      await createGeoFence();
+
+      await pollTrackerForUpdates(); // never returns
     })();
   }, []);
     
