@@ -3,6 +3,7 @@ import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, Alert, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
 import MapView, { Marker } from 'react-native-maps';
+import { FAB, Title } from 'react-native-paper';
 
 // AWS & Amplify
 import { Amplify } from 'aws-amplify';
@@ -25,14 +26,17 @@ import Main from './main.js';
 
 // -------------------------------------------------
 
+// Globals
+let client;
+let updatesEnbaled = true;
+// -------
 Amplify.configure(amplifyconfig);
 
 globalThis.ReadableStream = ReadableStream;
 
-let client;
 
 const createClient = async () => {
-    console.log( 'createClient()');
+//    console.log( 'createClient()');
 
     const session = await fetchAuthSession();
 
@@ -43,7 +47,7 @@ const createClient = async () => {
             credentials: session.credentials,
             region: amplifyconfig.aws_project_region
         });    
-        console.log( 'new client' );
+        console.log( 'New client created' );
     } catch (error) {
         // error handling.
         console.log( 'myClient error' );
@@ -71,20 +75,24 @@ const updatePosParams = {
 const updatePosCommand = new BatchUpdateDevicePositionCommand(updatePosParams);
 
 async function updatePosition(lat, long) {
-    console.log('updatePosition()');
+  // console.log( `updatesEnbaled: ${updatesEnbaled}` );
+
+  if( updatesEnbaled ) {
+//    console.log('updatePosition()');
 
     updatePosCommand.input.Updates[0].Position[0] = long;
     updatePosCommand.input.Updates[0].Position[1] = lat;
     updatePosCommand.input.Updates[0].SampleTime = new Date();
 
-    console.log( `DeviceId: ${updatePosCommand.input.Updates[0].DeviceId}` );
-    console.log( `Pos: ${updatePosCommand.input.Updates[0].Position}` );
+    // console.log( `DeviceId: ${updatePosCommand.input.Updates[0].DeviceId}` );
+    
 
     if(client) {  
       try {
         const data = await client.send(updatePosCommand);
-        console.log( 'data' );
-        console.log (data);
+        console.log( `Tx Pos: ${updatePosCommand.input.Updates[0].Position}` );
+//        console.log( 'data' );
+//        console.log (data);
       } catch (error) {
           // error handling.
           console.log( 'error' );
@@ -92,6 +100,10 @@ async function updatePosition(lat, long) {
       }
     }
   }
+  else {
+//    console.log('update not sent');
+  }
+}
 
 module.exports.updatePosition = updatePosition;
 
@@ -111,7 +123,12 @@ const getPosCommand = new GetDevicePositionCommand(getPosParams);
 // --- App () ---
 
 export default function App() {
-  console.log( 'App()');
+//  console.log( 'App()');
+
+  function onPressFab() {
+    updatesEnbaled = !updatesEnbaled;
+    console.log( "Updates %s", updatesEnbaled ? "enabled" : "disabled" );
+  }
 
   const [myLocation, setmyLocation] = useState({latitude: 0, longitude: 0});
 
@@ -122,10 +139,11 @@ export default function App() {
   }
   
   const showMarker = () => {
+/*
     console.log( 'showMarker()');
     console.log( {myMarker} );
     console.log( myLocation );
-    
+*/    
     return (
       <Marker
         key={myMarker.key}
@@ -146,7 +164,7 @@ export default function App() {
   */
 
   async function pollTrackerForUpdates() {
-    console.log('pollTrackerForUpdates()');
+//    console.log('pollTrackerForUpdates()');
 
     await getPosition();
     await new Promise(resolve => setTimeout(resolve, 10000));
@@ -155,7 +173,7 @@ export default function App() {
   }
     
   async function getPosition() {
-    console.log('getPosition()');
+//    console.log('getPosition()');
 
     if(client) {
       client.send(getPosCommand, (err, data) => {
@@ -167,7 +185,7 @@ export default function App() {
         
         if (data && data.Position) 
         { 
-            console.log(`Long: ${data.Position[0]}, Lat: ${data.Position[1]}`);
+            console.log(`Rx Pos: ${data.Position[0]},${data.Position[1]}`);
             setmyLocation({ longitude: data.Position[0], latitude: data.Position[1] });
         }
       });
@@ -175,7 +193,7 @@ export default function App() {
   }
 
   useEffect(() => {
-    console.log( 'useEffect()');
+//    console.log( 'useEffect()');
     (async () => {
       client = await createClient();
       await pollTrackerForUpdates();
@@ -190,6 +208,12 @@ export default function App() {
           <MapView style={styles.map}>
             {showMarker()}
           </MapView>
+          <FAB
+            icon="plus"
+            style={styles.fab}
+            onPress={onPressFab}
+          />
+
       </View>
 
   );
@@ -208,6 +232,12 @@ const styles = StyleSheet.create({
   },
   markerImage: {
     width: 35,
-    height: 35
-  }
+    height: 35,
+  },
+  fab: {
+    position: 'absolute',
+    margin: 16,
+    right: 0,
+    top: 30,
+  },
 });
