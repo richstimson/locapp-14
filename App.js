@@ -128,9 +128,12 @@ export default function App() {
   function onPressFab() {
     updatesEnbaled = !updatesEnbaled;
     console.log( "Updates %s", updatesEnbaled ? "enabled" : "disabled" );
+
+    updatesEnbaled ? setFabIcon( 'minus' ) : setFabIcon( 'plus' );
   }
 
   const [myLocation, setmyLocation] = useState({latitude: 0, longitude: 0});
+  const [fabIcon, setFabIcon] = useState('plus'); 
 
   const myMarker = {
     key: 1,
@@ -209,7 +212,7 @@ export default function App() {
             {showMarker()}
           </MapView>
           <FAB
-            icon="plus"
+            icon={fabIcon}
             style={styles.fab}
             onPress={onPressFab}
           />
