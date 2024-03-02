@@ -13,7 +13,8 @@ import {
   AssociateTrackerConsumerCommand,
   BatchUpdateDevicePositionCommand,
   GetDevicePositionCommand,
-  PutGeofenceCommand
+  PutGeofenceCommand,
+  UpdateTrackerCommand
 } from '@aws-sdk/client-location';
 
 // Fix ReadableStream error
@@ -30,6 +31,8 @@ import Main from './main.js';
 // Globals
 let client;
 let updatesEnbaled = true;
+
+const trackerName = 'MobileTracker';
 // -------
 Amplify.configure(amplifyconfig);
 
@@ -159,6 +162,37 @@ async function createGeoFence() {
 
 }
 
+// Update Tracker API -------------------------------------
+
+
+const updateTrackerInput = { 
+  TrackerName: 'MobileTracker',
+  EventBridgeEnabled: true,
+  Description: 'Bob Tracker',
+};
+
+
+/** NOTE: This command not be performed by unauth Role! */
+const updateTrackerCommand = new UpdateTrackerCommand(updateTrackerInput);
+
+async function updateTracker() {
+  console.log( 'updateTracker()' );    
+
+  if(client) {  
+    try {
+      const updateTrackerResponse = await client.send(updateTrackerCommand);
+      console.log( updateTrackerResponse );
+
+      } catch (error) {
+          console.log( 'updateTracker error' );
+          console.log( error );
+    }
+  }
+  else {
+    console.log('no client ');
+  }
+
+}
 
 // --- App () ---
 
@@ -239,6 +273,7 @@ export default function App() {
       client = await createClient();
       console.log( 'createGeoFence2' );  
       await createGeoFence();
+//      await updateTracker(); // not possible from unauth role!
 
       await pollTrackerForUpdates(); // never returns
     })();
