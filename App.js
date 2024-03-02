@@ -2,7 +2,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { StyleSheet, Text, View, Button, Alert, Image } from 'react-native';
 import React, { useState, useEffect } from 'react';
-import MapView, { Marker } from 'react-native-maps';
+import MapView, { Marker, Circle } from 'react-native-maps';
 import { FAB, Title } from 'react-native-paper';
 
 // AWS & Amplify
@@ -121,14 +121,14 @@ const getPosCommand = new GetDevicePositionCommand(getPosParams);
 // GeoFence API -------------------------------------
 const createGeofenceInput = { // PutGeofenceRequest
   CollectionName: "rs-geofence-collection", // required
-  GeofenceId: "rs-geofence-1", // required
+  GeofenceId: "rs-geofence-2", // required
   Geometry: { // GeofenceGeometry
     Circle: { // Circle
       Center: [ // required
         -1.4301285333944764,
         52.94063620274229,
       ],
-      Radius: 50, // required
+      Radius: 5, // required
     },
   },
 };
@@ -256,6 +256,17 @@ export default function App() {
           <Main />
           <MapView style={styles.map}>
             {showMarker()}
+            <Circle
+              center={{
+                longitude: -1.4301285333944764,
+                latitude: 52.94063620274229,
+              }}
+              radius={20}
+              strokeWidth={2}
+              strokeColor="#3399ff"
+              fillColor="rgba(50,50,255,0.1)"
+//              fillColor="#80bfff"
+            />
           </MapView>
           <FAB
             icon={fabIcon}
