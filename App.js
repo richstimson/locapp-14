@@ -128,15 +128,11 @@ const createGeofenceInput = { // PutGeofenceRequest
         -1.4301285333944764,
         52.94063620274229,
       ],
-      Radius: 5, // required
+      Radius: 20, // required
     },
   },
 };
-/*  
-  GeofenceProperties: { // PropertyMap
-    "<keys>": "STRING_VALUE",
-  },
-*/
+
 
 const putGeoFenceCommand = new PutGeofenceCommand(createGeofenceInput);
 
@@ -177,7 +173,6 @@ export default function App() {
   }
 
   const [myLocation, setmyLocation] = useState({latitude: 0, longitude: 0});
-  // const [fabIcon, setFabIcon] = useState('plus'); 
   const [fabIcon, setFabIcon] = (updatesEnbaled ? useState( 'minus' ) : useState( 'plus' ));
 
   const myMarker = {
