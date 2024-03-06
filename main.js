@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Text, View, Button, Alert  } from 'react-native';
 import * as Location from 'expo-location';
 import { updatePosition } from './App';
-//import Device from './src/device';
+import Device from './src/device';
 
-//const deviceSvc = new Device();
+const deviceSvc = new Device();
 
 export default function Main() {
     const [location, setLocation] = useState(null);
@@ -13,24 +13,34 @@ export default function Main() {
     const [deviceName, setDeviceName] = useState("");
     const [deviceId, setDeviceId] = useState("");
 
-//    console.log( 'Main()');
+    console.log( 'Main()');
 
 
     useEffect(() => {
-//        console.log( 'Main() useEffect()');
+        console.log( 'Main() useEffect()');
         
         (async () => {
 
-/*
-          deviceSvc.init()
+          await deviceSvc.write({id: 'edf95663-1824-46ca-b37c-40d6e6ec8853'});
+
+          await deviceSvc.init()
           .then((resp)=> {
               if(resp !== null){
+                console.log( 'resp' );  
+                console.log( resp );
                   setTracker(resp.trackerName);
                   setDeviceName(resp.name);
                   setDeviceId(resp.id);
               }
+              else {
+                console.log( 'resp null' );
+              }
           });
-*/  
+
+          console.log( 'Registering device..');
+
+          deviceSvc.register('rs-device-01', 'MobileTracker'); 
+          
           let { status } = await Location.requestForegroundPermissionsAsync();
           if (status !== 'granted') {
             setErrorMsg('Permission to access location was denied');

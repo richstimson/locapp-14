@@ -14,6 +14,15 @@
     "categories": {
       "auth": {
         "locapp11f223b884": {}
+      },
+      "api": {
+        "locapp11": {}
+      },
+      "function": {
+        "updateLocationLocapp11": {
+          "deploymentBucketName": "amplify-locapp11-dev-222959-deployment",
+          "s3Key": "amplify-builds/updateLocationLocapp11-4859324a337378446139-build.zip"
+        }
       }
     }
   }
