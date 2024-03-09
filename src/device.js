@@ -6,6 +6,7 @@ import { generateClient } from 'aws-amplify/api';
 
 import config from '../src/amplifyconfiguration.json';
 import { listDevices } from './graphql/queries';
+import * as subscriptions from './graphql/subscriptions';
 
 Amplify.configure(config)
 
@@ -62,7 +63,10 @@ export default class Device{
     async create(name,trackerName){
         console.log( `create ${name} ${trackerName}`);
 
-        const resp = await appsyncClient.graphql({
+
+
+        const resp = await appsyncClient
+        .graphql({
             query: createDevice,
             variables: {    
                 input: {
@@ -89,24 +93,67 @@ export default class Device{
 
     async update(id, name, trackerName){
         console.log(`update() id: ${id}, name: ${name}, tracker: ${trackerName}`);
+
 //        let resp = await API.graphql(graphqlOperation(updateDevice, {input: {id, name, trackerName}}));
-        const resp = await appsyncClient.graphql({
-            query: updateDevice,
-            variables: {
-                input: {
-                    id: id,
-                    name: name,
-                    trackerName: trackerName
+        const resp = await appsyncClient
+            .graphql({
+                query: updateDevice,
+                variables: {
+                    input: {
+                        id: id,
+                        name: name,
+                        trackerName: trackerName
+                    }
                 }
-            }
-        });
-        console.log( 'update resp');
-        console.log( resp );
+            });
+            // .subscribe({
+            //     next: ({ data }) => {
+            //         console.log( "Device updated (subscription) ***********");
+            //         console.log( data );
+            //     }
+            // })
+            console.log( 'update resp');
+            console.log( resp );
+    
+    
     }
 
     async init(){
         console.log( 'init()');
         
+        // --- Subscribe to creation of Device
+        const createSubResp = await appsyncClient
+        .graphql({ query: subscriptions.onCreateDevice })
+        .subscribe({
+        next: ({ data }) => {
+            console.log( "Device created (subscription) ***********");
+            console.log(data);
+        },
+        error: (error) => {
+            console.log( "Device created (subscription) ERROR ***********");
+            console.warn(error)
+        }});
+        console.log( 'create sub resp');
+        console.log( createSubResp );
+        // ---
+
+        // --- Subscribe to update of Device
+        const updateSubResp = await appsyncClient
+        .graphql({ query: subscriptions.onUpdateDevice })
+        .subscribe({
+        next: ({ data }) => {
+            console.log( "Device updated (subscription) ***********");
+            console.log(data);
+        },
+        error: (error) => {
+            console.log( "Device updated (subscription) ERROR ***********");
+            console.warn(error)
+        }});
+        console.log( 'update sub resp');
+        console.log( updateSubResp );
+        // ---
+
+
         // Read ID from Expo file system
         let data = await this.read();
         console.log( 'read data:');
